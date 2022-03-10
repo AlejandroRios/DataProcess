@@ -80,8 +80,8 @@ def data_preprocessing(departure,arrival):
     df = df[df['roc'].notna()]
 
     # Drop high values of roc 
-    df = df.drop(df[df.roc < -5000].index)
-    df = df.drop(df[df.roc > 5000].index)
+    df = df.drop(df[df.roc < -7000].index)
+    df = df.drop(df[df.roc > 7000].index)
     ########################################################################################
     """Accounting the number of flights"""
     ########################################################################################
