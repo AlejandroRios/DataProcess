@@ -36,12 +36,9 @@ dependencies:
   - scipy>=1.5.3
   - scikit-learn>=0.21.3
   - pandas>=0.25.0
-  - pulp>=2.0
   - bokeh>=2.0.0
   - glpk>=0.4
   - numba>=0.5
-  - smt>=1.0.0
-  - haversine>=2.3.1
   - jsonschema>=3.2.0
   # Testing
   - flake8
