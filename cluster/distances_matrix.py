@@ -10,7 +10,7 @@ Aeronautical Institute of Technology - Airbus Brazil
 """Importing Modules"""
 ########################################################################################
 import numpy as np
-from hausdurff_distance import cmax
+from cluster.hausdurff_distance import cmax
 ########################################################################################
 """ Meassuring Hausdorff distance between trajectories  2"""
 #######################################################################################
@@ -36,8 +36,6 @@ def distances(coordinates_vec,d_matrix_exist,cluster_type):
     
             D[i, j] = distance
             D[j, i] = distance
-
-
 
     if (d_matrix_exist == 0) & (cluster_type == 0):
         np.save('horizontal_D.npy', D)

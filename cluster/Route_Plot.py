@@ -38,7 +38,8 @@ from datetime import datetime
 print('[0] Load dataset.\n')
     
 # df = pd.read_csv('AIRP1AIRP2_5day.csv', header=0, delimiter=',')
-df = pd.read_csv('Data4Clustering01.csv', header=0, delimiter=',')
+# df = pd.read_csv('Database/Data4Clustering/FRA/Data4Clustering_FRAAMS.csv', header=0, delimiter=',')
+df = pd.read_csv('C:/Users/aarc8/Documents/DATABASE01/DB_routes_processed/LHR/LHR-FRA/preprocessing/Data4Clustering01.csv', header=0, delimiter=',')
 df_head = df.head()
 
 Nflights = df.sort_index().query('count == 0')
@@ -62,8 +63,17 @@ print('- Number of flights: \n', Numflights )
 """Base map definition"""
 ########################################################################################
 
-fig, ax = plt.subplots()
-m = Basemap(resolution='i', projection='merc', llcrnrlat=35, urcrnrlat=60, llcrnrlon=-15, urcrnrlon=30)
+fig, ax = plt.subplots(figsize=(10, 5))
+
+plt.rc('font', family='serif')
+plt.rc('xtick', labelsize='x-small')
+plt.rc('ytick', labelsize='x-small')
+# m = Basemap(resolution='i', projection='merc', llcrnrlat=35, urcrnrlat=60, llcrnrlon=-15, urcrnrlon=30)
+# m = Basemap(resolution='i', projection='merc', llcrnrlat=45, urcrnrlat=55, llcrnrlon=0, urcrnrlon=10)
+m = Basemap(llcrnrlat=49, urcrnrlat=53, llcrnrlon=-3, urcrnrlon=10,\
+            rsphere=(6378137.00,6356752.3142),\
+            resolution='i',projection='merc',\
+            lat_0=40.,lon_0=-20.,lat_ts=20.)
 m.drawmapboundary(fill_color='aqua')
 m.fillcontinents(color='1.0',lake_color='aqua')
 m.drawcoastlines()
@@ -136,6 +146,11 @@ for i in range(len(Nflights)-1):
 # lat_ff = np.asarray(lat_ff)
 # lon_ff = np.asarray(lon_ff)
 
+# ax = sns.violinplot(x=population)
+
+
+
+plt.show()
 #########################################################################################
 """Plot Definition"""
 ########################################################################################

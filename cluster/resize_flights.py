@@ -20,6 +20,8 @@ def resize(df,Nflights,chunk_size,cluster_type):
     
     coordinates_vec = []
 
+    print(df.head())
+
     for i in range(0,len(Nflights)-1): 
 
         flights = df.iloc[Nflights.index[i]:Nflights.index[i+1]]
@@ -65,10 +67,23 @@ def resize(df,Nflights,chunk_size,cluster_type):
         rocs_rz = sp.interpolate.interp1d(xrocs, rocs, kind='linear')(new_xrocs)
         # rocs_rz = sp.signal.medfilt(rocs_rz,51)
 
+        tas_spds= flights['tas']
+        xtasspds= np.arange(tas_spds.size)
+        new_tas_xspds = np.linspace(xtasspds.min(), xtasspds.max(), chunk_size)
+        tas_spds_rz = sp.interpolate.interp1d(xtasspds, tas_spds, kind='linear')(new_tas_xspds)
+
+        machs= flights['mach']
+        xmachs= np.arange(machs.size)
+        new_xmachs = np.linspace(xmachs.min(), xmachs.max(), chunk_size)
+        machs_rz = sp.interpolate.interp1d(xmachs, machs, kind='linear')(new_xmachs)
+        # spds_rz = sp.signal.medfilt(spds_rz,51)
+
+
+
         if cluster_type == 0:
-            coordinates = np.concatenate((time_rz[:,None], lon_rz[:,None],lat_rz[:,None],alt_rz[:,None],spds_rz[:,None],rocs_rz[:,None]),axis=1)
+            coordinates = np.concatenate((time_rz[:,None], lon_rz[:,None],lat_rz[:,None],alt_rz[:,None],spds_rz[:,None],rocs_rz[:,None],tas_spds_rz[:,None],machs_rz[:,None]),axis=1)
         elif cluster_type == 1:
-            coordinates = np.concatenate((time_rz[:,None], lon_rz[:,None],lat_rz[:,None],alt_rz[:,None],spds_rz[:,None],rocs_rz[:,None]),axis=1)
+            coordinates = np.concatenate((time_rz[:,None], lon_rz[:,None],lat_rz[:,None],alt_rz[:,None],spds_rz[:,None],rocs_rz[:,None],tas_spds_rz[:,None],machs_rz[:,None]),axis=1)
         coordinates = tuple(map(tuple, coordinates))
         coordinates_vec.append(np.vstack(coordinates))
 

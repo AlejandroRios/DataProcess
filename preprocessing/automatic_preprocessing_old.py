@@ -29,19 +29,49 @@ from preprocessing.flightphase import fuzzylabels
 
 def data_preprocessing(departure,arrival):
     
-    name = "/Users/aarc8/Documents/DATABASE/"+departure+ "/"+departure+"-"+arrival +"/allFlights_" + departure + arrival +".csv"
+    name = "/Users/aarc8/Documents/DATABASE01/DB_routes_processed/"+departure+ "/"+departure+"-"+arrival +"/preprocessing/allFlights.csv"
     print('[0] Load dataset.\n')
         
     # df = pd.read_csv('allFlights.csv',  header=None, delimiter=',')
     df = pd.read_csv(name, delimiter=',')
-    df.columns = ["airsenseMissionId","posTime","origin","destination","lat","lon","alt","altGps","track","speed","tas","mach","rollAngle","windDir","windSpeed","bvr","heading","magneticHeading","ias","qnh","targetId","targetAddress","import_version","import_time"]
-    df_head = df.head()
-    print(df_head)
+    
 
+
+    print(df.dtypes)
     ########################################################################################
     """Data manipulation and checks"""
     ########################################################################################
     print('[1] Data manipulation and checks.\n')
+
+    df.columns=["acasRAR","aircraftReg","aircraftType","airlineId","airsenseMissionId",
+    "alt","altGps","altSelected","altSource","autoFlags",
+    "bvr","category","destination","diffCorr","errorId",
+    "eta","flightNumber","fusionalt","fusionlat","fusionlon",
+    "fusionspeed","fusiontrack","gva","gvr","heading",
+    "ias","inTime","isoutlier","lat","lon",
+    "mach","magneticHeading","messageID","mil","missionId",
+    "mode3A","nacP","nacV","nic","nicBaro",
+    "onGround","origin","pic","posTime","qnh",
+    "receiverId","receiverType","sda","sil","silSupp",
+    "source","speed","targetAddress","targetId","targetStatus",
+    "tas","track","uncertFusionAlt","uncertFusionLat","uncertFusionLon",
+    "uncertFusionSpeed","uncertFusionTrack","velTime","versionNumber"]
+
+    # Sort values - organize flights
+    df = df.sort_values(by=["targetAddress","missionId","posTime"])
+
+    df = df.drop(["acasRAR","altSelected","altSource","autoFlags","category",
+    "diffCorr","errorId","eta","fusiontrack","inTime",
+    "messageID","mil","mode3A","nacP","nacV","nic","nicBaro","pic",
+    "receiverId","receiverType","sda","sil","silSupp","source","targetAddress",
+    "targetStatus","track","uncertFusionAlt","uncertFusionLat","uncertFusionLon",
+    "uncertFusionSpeed","uncertFusionTrack","velTime","versionNumber"], axis=1)
+
+    df_head = df.head()
+    print(df_head['origin'],df_head['destination'])
+
+    # Check if data contains null values
+    # print('Data containing NAN: \n',df.isnull().sum())
 
     # Calculate difference between current and previus timestep for latitude and store information in new column
     df['amount_diff'] = (df['lat'].diff().fillna(0)).abs()
@@ -50,7 +80,7 @@ def data_preprocessing(departure,arrival):
     df['big_diff'] = df['amount_diff'].apply(lambda x: 'False' if x <= 3 else 'True')
 
     # Drop outliers declared by AirSense
-    # df.drop(df[df['isoutlier'] == True].index, inplace=True)
+    df.drop(df[df['isoutlier'] == True].index, inplace=True)
 
     # Calculate time in seconds [s]
     df['posTime'] = df['posTime']/1000 
@@ -88,9 +118,7 @@ def data_preprocessing(departure,arrival):
     print('[3] Accounting number of flights by icao and call filters.\n')
 
     # query - takes all index with count = 0 of sorted data
-    # df['count'] = df.groupby(((df['aircraftReg'] != df['aircraftReg'].shift(1)) | (df['targetId'] != df['targetId'].shift(1)) | (df['missionId'] != df['missionId'].shift(1))   |  (df['big_diff'].eq('True').shift(0))).cumsum()).cumcount()
-    df['count'] = df.groupby(((df['targetId'] != df['targetId'].shift(1)) | (df['airsenseMissionId'] != df['airsenseMissionId'].shift(1))   |  (df['big_diff'].eq('True').shift(0))).cumsum()).cumcount()
-    
+    df['count'] = df.groupby(((df['aircraftReg'] != df['aircraftReg'].shift(1)) | (df['targetId'] != df['targetId'].shift(1)) | (df['missionId'] != df['missionId'].shift(1))   |  (df['big_diff'].eq('True').shift(0))).cumsum()).cumcount()
     # df['count'] = df.groupby(((df['big_diff'].eq('True').shift(0))).cumsum()).cumcount()
 
     flights = df.sort_index().query('count == 0')
@@ -101,7 +129,7 @@ def data_preprocessing(departure,arrival):
 
     df['FlightNum']=df['count'].eq(0).cumsum()
 
-    df2 = df[['count','posTime','lat','lon','alt','speed','mach','tas',"heading","delta_h","delta_t","roc",'targetId','FlightNum']]
+    df2 = df[['count','posTime','aircraftType','lat','lon','alt','speed','mach','tas',"heading","delta_h","delta_t","roc",'targetId','FlightNum']]
 
     ########################################################################################
     """Flight phase identification"""
@@ -113,11 +141,11 @@ def data_preprocessing(departure,arrival):
     df3=pd.DataFrame()
     data = pd.DataFrame()
 
-
     df4 =pd.DataFrame(columns=['HFE'])
 
     i = 0
     for key, data in data_gby:
+        # print(len(data))
 
         if len(data) > 100:
 
@@ -167,42 +195,42 @@ def data_preprocessing(departure,arrival):
             # rocspl = sp.signal.savgol_filter(rocspl, 21, 3)
             
 
-            # if i < 5:
-            #     plt.subplot(411)
-            #     plt.plot(lat,lon , '-', color='k', alpha=0.5)
-            #     plt.scatter(lat, lon, marker='.', c=colors, lw=0)
-            #     plt.xlabel('lat (deg)')
-            #     plt.ylabel('lon (deg)')
-            #     plt.grid(True)
+            if i < 5:
+                plt.subplot(411)
+                plt.plot(lat,lon , '-', color='k', alpha=0.5)
+                plt.scatter(lat, lon, marker='.', c=colors, lw=0)
+                plt.xlabel('lat (deg)')
+                plt.ylabel('lon (deg)')
+                plt.grid(True)
 
-            #     plt.subplot(412)
-            #     # plt.title('press any key to continue...')
-            #     plt.plot(times, altspl, '-', color='k', alpha=0.5)
-            #     plt.scatter(times, alts, marker='.', c=colors, lw=0)
-            #     plt.ylabel('altitude (ft)')
-            #     plt.grid(True)
+                plt.subplot(412)
+                # plt.title('press any key to continue...')
+                plt.plot(times, altspl, '-', color='k', alpha=0.5)
+                plt.scatter(times, alts, marker='.', c=colors, lw=0)
+                plt.ylabel('altitude (ft)')
+                plt.grid(True)
 
-            #     plt.subplot(413)
-            #     plt.plot(times, spdspl, '-', color='k', alpha=0.5)
-            #     plt.scatter(times, spds, marker='.', c=colors, lw=0)
-            #     plt.ylabel('speed (kt)')
-            #     plt.grid(True)
+                plt.subplot(413)
+                plt.plot(times, spdspl, '-', color='k', alpha=0.5)
+                plt.scatter(times, spds, marker='.', c=colors, lw=0)
+                plt.ylabel('speed (kt)')
+                plt.grid(True)
 
-            #     plt.subplot(414)
-            #     plt.plot(times, rocspl, '-', color='k', alpha=0.5)
-            #     plt.scatter(times, rocs, marker='.', c=colors, lw=0)
-            #     plt.ylabel('roc (fpm)')
-            #     plt.xlabel('time')
-            #     plt.grid(True)
+                plt.subplot(414)
+                plt.plot(times, rocspl, '-', color='k', alpha=0.5)
+                plt.scatter(times, rocs, marker='.', c=colors, lw=0)
+                plt.ylabel('roc (fpm)')
+                plt.xlabel('time')
+                plt.grid(True)
 
-            #     plt.tight_layout()
-            #     plt.draw()
-            #     plt.waitforbuttonpress(-1)
-            #     plt.clf()
-            #     plt.close()
+                plt.tight_layout()
+                plt.draw()
+                plt.waitforbuttonpress(-1)
+                plt.clf()
+                plt.close()
 
     # Store flights that contain more than 500 points of data
-    df3 = df3[df3.groupby('FlightNum')['FlightNum'].transform('count').ge(500)]
+    df3 = df3[df3.groupby('FlightNum')['FlightNum'].transform('count').ge(200)]
 
     ########################################################################################
     """Saving processed data into new .csv"""
@@ -232,10 +260,10 @@ def data_preprocessing(departure,arrival):
 
     name_data_cluster = "Data4Clustering_" + departure + arrival + ".csv"
     name_data_HEF ="data_HEF_" + departure + arrival + ".csv"
-    df3.to_csv(path_cluster+name_data_cluster)
+    # df3.to_csv(path_cluster+name_data_cluster)
     df4.to_csv(path_HFE+name_data_HEF)
     # df.to_pickle("Data4Clustering01.pkl")
-    print('[6] All completed.\n')
+    # print('[6] All completed.\n')
 
     return
 

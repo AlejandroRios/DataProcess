@@ -91,8 +91,7 @@ states = np.arange(0, 6, 0.01)
 # best one
 alt_gnd = fuzz.zmf(alt_range, 0, 200)
 alt_lo = fuzz.gaussmf(alt_range, 10000, 10000)
-# alt_hi = fuzz.gaussmf(alt_range, 30000, 15000)
-alt_hi = fuzz.gaussmf(alt_range, 40000, 15000)
+alt_hi = fuzz.gaussmf(alt_range, 30000, 15000)
 alt_cru = fuzz.smf(alt_range,30000,43000)
 
 roc_zero = fuzz.gaussmf(roc_range, 0, 100)
@@ -247,51 +246,20 @@ def fuzzylabels(ts, alts, spds, rocs, twindow=60):
 
 
         
-        # rule_ground = min(alt_level_gnd, roc_level_zero, spd_level_lo)
-        # state_activate_ground = np.fmin(rule_ground, state_ground)
-
-        # rule_climb = min(alt_level_lo, roc_level_plus, spd_level_md)
-        # state_activate_climb = np.fmin(rule_climb, state_climb)
-
-        # rule_descent = min(alt_level_hi, roc_level_minus)
-        # state_activate_descent = np.fmin(rule_descent, state_descent)
-
-        # rule_cruise = min(alt_level_cru,roc_level_cru,spd_level_hi)
-        # state_activate_cruise = np.fmin(rule_cruise, state_cruise)
-
-        # rule_level = min(alt_level_lo, roc_level_zero, spd_level_md)
-        # state_activate_level = np.fmin(rule_level, state_level)
-
         rule_ground = min(alt_level_gnd, roc_level_zero, spd_level_lo)
         state_activate_ground = np.fmin(rule_ground, state_ground)
 
         rule_climb = min(alt_level_lo, roc_level_plus, spd_level_md)
         state_activate_climb = np.fmin(rule_climb, state_climb)
 
-        rule_descent = min(alt_level_hi, roc_level_minus, spd_level_md)
+        rule_descent = min(alt_level_hi, roc_level_minus)
         state_activate_descent = np.fmin(rule_descent, state_descent)
 
-        rule_cruise = min(alt_level_hi, roc_level_zero, spd_level_hi)
+        rule_cruise = min(alt_level_cru,roc_level_cru,spd_level_hi)
         state_activate_cruise = np.fmin(rule_cruise, state_cruise)
 
         rule_level = min(alt_level_lo, roc_level_zero, spd_level_md)
         state_activate_level = np.fmin(rule_level, state_level)
-
-        # rule_ground = min(alt_level_gnd, roc_level_zero, spd_level_lo)
-        # state_activate_ground = np.fmin(rule_ground, state_ground)
-
-        # rule_climb = min(alt_level_lo, roc_level_plus, spd_level_md)
-        # state_activate_climb = np.fmin(rule_climb, state_climb)
-
-        # rule_descent = min(alt_level_hi, roc_level_minus, spd_level_md)
-        # state_activate_descent = np.fmin(rule_descent, state_descent)
-
-        # rule_cruise = min(alt_level_hi, roc_level_zero, spd_level_hi)
-        # state_activate_cruise = np.fmin(rule_cruise, state_cruise)
-
-        # rule_level = min(alt_level_lo, roc_level_zero, spd_level_md)
-        # state_activate_level = np.fmin(rule_level, state_level)
-
 
 
         aggregated = np.max(
