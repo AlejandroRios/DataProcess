@@ -129,8 +129,8 @@ def cluster_all(departure,arrival):
     # Define inputs for DBScan clustering process
     if cluster_norm == 0: # Not norm
         if cluster_type == 0:
-            # dbscan = DBSCAN(eps=3, min_samples=30)
-            dbscan = DBSCAN(eps=2, min_samples=4)
+            dbscan = DBSCAN(eps=3, min_samples=30)
+            # dbscan = DBSCAN(eps=2, min_samples=4)
             # dbscan= KMedoids(n_clusters = 1, random_state = 0)
         elif cluster_type == 1:
             dbscan = DBSCAN(eps=2000, min_samples=30)
@@ -252,8 +252,8 @@ def cluster_all(departure,arrival):
         print('--------------------------------------------------------------------------------\n')
         print('[6] Start clustering.\n')
 
-        # dbscan = DBSCAN(eps=4000, min_samples=10)
-        dbscan = DBSCAN(eps=4000, min_samples=4)
+        dbscan = DBSCAN(eps=4000, min_samples=10)
+        # dbscan = DBSCAN(eps=4000, min_samples=4)
             
         vcluster_list[i] = dbscan.fit_predict(Ds[i])
 
