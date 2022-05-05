@@ -35,6 +35,6 @@ for i in range(len(departures)):
         # if (i != j) and (i > 6) and (i < 8) and (j>11) and (j<13):
         # if (i != j) and (i > 13) and (j > 12):
         # if (i != j) and (i > 8) and (i < 10) and (j>0) and (j<2):
-        if (i != j) and (i == 11) and (j==13):
+        if (i != j):
         # if (i != j) and (i > 8):
             iterate_files(departures[i],arrivals[j])

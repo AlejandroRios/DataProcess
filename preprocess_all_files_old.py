@@ -24,7 +24,7 @@ def iterate_files(departures,arrivals):
 for i in range(len(departures)):
     for j in range(len(arrivals)):
         # if (i != j):
-        if (i != j) and (i > 8) and (j > 1):
+        if (i != j):
         # if (i != j) and (i > 6) and (i < 8) and (j>4) :
         # if (i != j) and (i > 6) and (i < 8):
             # iterate_files(departures[i],arrivals[j])
